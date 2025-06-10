@@ -50,6 +50,39 @@ resource "aws_iam_policy" "rds_full_access_policy" {
   })
 }
 
+resource "aws_iam_policy" "lambda_invoke_policy" {
+  name = "dev-lambda-invoke-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Effect": "Allow",
+        "Action": "logs:CreateLogGroup",
+        "Resource": "arn:aws:logs:ap-northeast-2:456330605094:*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "Resource": [
+          "arn:aws:logs:ap-northeast-2:456330605094:log-group:/aws/lambda/simpleCrawlingApi:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeNetworkInterfaces"
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "attach_s3_policy" {
   role       = aws_iam_role.dev_instance_role.name
   policy_arn = aws_iam_policy.s3_full_access_policy.arn
@@ -58,6 +91,11 @@ resource "aws_iam_role_policy_attachment" "attach_s3_policy" {
 resource "aws_iam_role_policy_attachment" "attach_rds_policy" {
   role       = aws_iam_role.dev_instance_role.name
   policy_arn = aws_iam_policy.rds_full_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_invoke_policy" {
+  role       = aws_iam_role.dev_instance_role.name
+  policy_arn = aws_iam_policy.lambda_invoke_policy.arn
 }
 
 resource "aws_iam_instance_profile" "dev_instance_profile" {
