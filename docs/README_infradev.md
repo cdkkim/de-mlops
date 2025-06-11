@@ -23,11 +23,22 @@ cd infra/dev
 
 ## AWS SSO 설치
 - `awscli` 최신버전을 설치해주세요. 최신 버전이 `aws sso configure`가 더 쉽습니다.
+### linux
 ```bash
 sudo apt remove awscli
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
+```
+### mac
+```bash
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+sudo installer -pkg AWSCLIV2.pkg -target /
+```
+### window
+```bash
+Invoke-WebRequest "https://awscli.amazonaws.com/AWSCLIV2.msi" -OutFile "AWSCLIV2.msi"
+Start-Process msiexec.exe -ArgumentList '/i AWSCLIV2.msi /quiet' -Wait
 ```
 
 ## AWS SSO 설정
