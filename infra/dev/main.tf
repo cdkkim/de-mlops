@@ -4,7 +4,7 @@ data "aws_key_pair" "existing_key" {
 
 resource "aws_instance" "dev_instance" {
     ami = "ami-08943a151bd468f4e"
-    instance_type = "t2.micro"
+    instance_type = "t3.micro"
     subnet_id = data.aws_subnets.default_subnets.ids[0]
     key_name = data.aws_key_pair.existing_key.key_name
     vpc_security_group_ids = [aws_security_group.dev_instance_sg.id]
