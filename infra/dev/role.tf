@@ -22,10 +22,14 @@ resource "aws_iam_policy" "s3_full_access_policy" {
       {
         Effect = "Allow"
         Action = [
-          "s3:*",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:ListAllMyBuckets",
         ]
         Resource = [
-          "*"
+          "arn:aws:s3:::dev-s3-${random_pet.name.id}",
+          "arn:aws:s3:::dev-s3-${random_pet.name.id}/*"
         ]
       }
     ]
@@ -40,7 +44,9 @@ resource "aws_iam_policy" "rds_full_access_policy" {
       {
         Effect = "Allow"
         Action = [
-          "rds:*",
+          "rds:DescribeDBInstances",
+          "rds:DescribeDBClusters",
+          "rds-db:connect"
         ]
         Resource = [
           "*"
