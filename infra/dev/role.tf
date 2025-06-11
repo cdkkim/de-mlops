@@ -1,6 +1,6 @@
 resource "aws_iam_role" "dev_instance_role" {
   name = "dev-instance-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -62,28 +62,28 @@ resource "aws_iam_policy" "lambda_invoke_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        "Effect": "Allow",
-        "Action": "logs:CreateLogGroup",
-        "Resource": "arn:aws:logs:ap-northeast-2:456330605094:*"
+        "Effect" : "Allow",
+        "Action" : "logs:CreateLogGroup",
+        "Resource" : "arn:aws:logs:ap-northeast-2:456330605094:*"
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        "Resource": [
+        "Resource" : [
           "arn:aws:logs:ap-northeast-2:456330605094:log-group:/aws/lambda/simpleCrawlingApi:*"
         ]
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "ec2:CreateNetworkInterface",
           "ec2:DeleteNetworkInterface",
           "ec2:DescribeNetworkInterfaces"
         ],
-        "Resource": "*"
+        "Resource" : "*"
       }
     ]
   })
@@ -105,6 +105,6 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_invoke_policy" {
 }
 
 resource "aws_iam_instance_profile" "dev_instance_profile" {
-    name = "dev-instance-profile"
-    role = aws_iam_role.dev_instance_role.name
+  name = "dev-instance-profile"
+  role = aws_iam_role.dev_instance_role.name
 }
