@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dummy-nginx-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing # internal이면 동작 X
+    alb.ingress.kubernetes.io/target-type: ip
+    kubernetes.io/ingress.class: alb
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: alb # aws alb controller가 관리하고 있음을 의미
+  tls:
+    - hosts:
+        - dummy-nginx.local.com
+      # secretName: dummy-nginx-tls-secret
+  rules:
+    - host: dummy-nginx.local.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dummy-nginx-service
+                port:
+                  number: 8000
