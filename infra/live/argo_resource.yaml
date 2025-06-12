@@ -7,9 +7,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/yourorg/yourrepo.git
-    targetRevision: main
-    path: path/to/folder
+    repoURL: https://github.com/cdkkim/de-mlops.git
+    targetRevision: cd-manifest
+    path: cd/manifest
 
   destination:
     server: https://kubernetes.default.svc
