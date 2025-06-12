@@ -1,0 +1,103 @@
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.8.5"
+
+  cluster_name    = "live-eks-${random_pet.name.id}"
+  cluster_version = "1.29"
+
+  cluster_endpoint_public_access           = true
+  enable_cluster_creator_admin_permissions = true
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  enable_irsa = true
+
+  eks_managed_node_group_defaults = {
+    ami_type = "AL2_x86_64"
+  }
+
+  eks_managed_node_groups = {
+    one = {
+      name = "live-eks-node-group-1"
+
+      instance_types = ["t3.large"]
+
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+    }
+  }
+}
+
+resource "helm_release" "cert_manager" {
+  name             = "cert-manager"
+  chart            = "cert-manager"
+  repository       = "https://charts.jetstack.io"
+  namespace        = "cert-manager"
+  create_namespace = true
+
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
+}
+
+resource "kubernetes_service_account" "live_eks_sa" {
+  metadata {
+    name      = "live-eks-sa"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = module.irsa.iam_role_arn
+    }
+  }
+}
+
+resource "helm_release" "aws_lb_controller" {
+  name       = "aws-lb-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+
+  set {
+    name  = "clusterName"
+    value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "false"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = kubernetes_service_account.live_eks_sa.metadata[0].name
+  }
+}
+
+resource "helm_release" "argocd" {
+  name       = "argocd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
+  namespace  = "argocd"
+  version    = "8.0.15"
+
+  create_namespace = true
+
+  values = [
+    file("argocd_values.yaml")
+  ]
+}
+
+resource "null_resource" "apply_argocd_resources" {
+  depends_on = [helm_release.argocd]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile}
+      kubectl apply -f issuer.yaml
+      kubectl apply -f argo_resource.yaml
+      kubectl apply -f argo_ingress.yaml
+    EOT
+  }
+}
