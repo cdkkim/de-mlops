@@ -5,7 +5,7 @@
 
 # Architecture
 
-![alt text](assets/dev-architecture.png)
+![alt text](../assets/dev-architecture.png)
 - 사용 리소스: `EC2`, `Aurora`, `S3`
 - vpc는 default vpc 사용했습니다.
 - subnet은 모두 public입니다.(caz: default vpc의 subnet은 모두 public입니다.)
