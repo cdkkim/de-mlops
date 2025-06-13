@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/cdkkim/de-mlops.git
     targetRevision: cd-manifest
-    path: cd/manifest
+    path: cd/kustomize/overlays
 
   destination:
     server: https://kubernetes.default.svc
