@@ -6,15 +6,29 @@ resource "aws_iam_policy" "live_s3_rw_policy" {
       {
         Effect = "Allow"
         Action = [
-          "s3:ListBucket",
-          "s3:GetObject",
-          "s3:PutObject",
           "s3:ListAllMyBuckets"
         ]
+        Resource = ["*"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
         Resource = [
-          "*",
           "arn:aws:s3:::live-s3-${random_pet.name.id}",
-          "arn:aws:s3:::live-s3-${random_pet.name.id}/*"
+          "arn:aws:s3:::live-loki-s3"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::live-s3-${random_pet.name.id}/*",
+          "arn:aws:s3:::live-loki-s3/*"
         ]
       }
     ]
