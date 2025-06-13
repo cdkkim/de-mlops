@@ -1,0 +1,6 @@
+resources:
+  - awscli_pod.yaml
+  - ingress.yaml
+  - issuer.yaml
+  - pod.yaml
+  - service.yaml
