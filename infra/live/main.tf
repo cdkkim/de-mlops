@@ -43,10 +43,20 @@ resource "helm_release" "cert_manager" {
   }
 }
 
-resource "kubernetes_service_account" "live_eks_sa" {
+resource "kubernetes_service_account" "live_eks_sa_kubesys" {
   metadata {
     name      = "live-eks-sa"
     namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = module.irsa.iam_role_arn
+    }
+  }
+}
+
+resource "kubernetes_service_account" "live_eks_sa_default" {
+  metadata {
+    name      = "live-eks-sa"
+    namespace = "default"
     annotations = {
       "eks.amazonaws.com/role-arn" = module.irsa.iam_role_arn
     }
@@ -71,7 +81,7 @@ resource "helm_release" "aws_lb_controller" {
 
   set {
     name  = "serviceAccount.name"
-    value = kubernetes_service_account.live_eks_sa.metadata[0].name
+    value = kubernetes_service_account.live_eks_sa_kubesys.metadata[0].name
   }
 }
 
