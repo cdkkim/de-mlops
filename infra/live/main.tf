@@ -85,7 +85,7 @@ resource "helm_release" "argocd" {
   create_namespace = true
 
   values = [
-    file("argocd_values.yaml")
+    file("config/argo_values.yaml")
   ]
 }
 
@@ -95,9 +95,8 @@ resource "null_resource" "apply_argocd_resources" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile}
-      kubectl apply -f issuer.yaml
-      kubectl apply -f argo_resource.yaml
-      kubectl apply -f argo_ingress.yaml
+      kubectl apply -f config/argo_resource.yaml
+      kubectl apply -f config/argo_ingress.yaml
     EOT
   }
 }

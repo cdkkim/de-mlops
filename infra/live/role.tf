@@ -43,7 +43,7 @@ resource "aws_iam_policy" "live_alb_controller_policy" {
   name        = "live-alb-controller-policy"
   description = "Custom ALB Controller IAM policy"
 
-  policy = file("alb_policy.json")
+  policy = file("config/alb_policy.json")
 }
 
 module "irsa" {
