@@ -60,6 +60,7 @@ module "irsa" {
   ]
 
   oidc_fully_qualified_subjects = [
-    "system:serviceaccount:kube-system:live-eks-sa"
+    "system:serviceaccount:kube-system:live-eks-sa",
+    "system:serviceaccount:default:live-eks-sa"
   ]
 }
