@@ -37,6 +37,8 @@ loki:
 
 grafana:
   enabled: true
+  image:
+    tag: "11.6.1" # sha오류 관련
   adminUser: admin
   adminPassword: admin123 # Grafana 비밀번호
   service:
