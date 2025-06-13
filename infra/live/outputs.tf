@@ -17,3 +17,13 @@ output "cluster_security_group_id" {
   description = "Security group ids attached to the cluster control plane"
   value       = module.eks.cluster_security_group_id
 }
+
+output "s3_bucket_name" {
+  description = "S3 bucket name"
+  value       = aws_s3_bucket.s3_storage.bucket
+}
+
+output "rds_cluster_name" {
+  description = "RDS cluster name"
+  value       = aws_rds_cluster.rds_cluster.cluster_identifier
+}
