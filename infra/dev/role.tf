@@ -36,6 +36,7 @@ resource "aws_iam_policy" "s3_full_access_policy" {
   })
 }
 
+/*
 resource "aws_iam_policy" "rds_full_access_policy" {
   name = "dev-rds-full-access"
   policy = jsonencode({
@@ -55,6 +56,7 @@ resource "aws_iam_policy" "rds_full_access_policy" {
     ]
   })
 }
+*/
 
 resource "aws_iam_policy" "lambda_invoke_policy" {
   name = "dev-lambda-invoke-policy"
@@ -94,10 +96,12 @@ resource "aws_iam_role_policy_attachment" "attach_s3_policy" {
   policy_arn = aws_iam_policy.s3_full_access_policy.arn
 }
 
+/*
 resource "aws_iam_role_policy_attachment" "attach_rds_policy" {
   role       = aws_iam_role.dev_instance_role.name
   policy_arn = aws_iam_policy.rds_full_access_policy.arn
 }
+*/
 
 resource "aws_iam_role_policy_attachment" "attach_lambda_invoke_policy" {
   role       = aws_iam_role.dev_instance_role.name
