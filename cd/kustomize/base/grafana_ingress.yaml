@@ -1,26 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: de-mlops-ingress
+  name: grafana-ingress
+  namespace: monitoring
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing # internal이면 동작 X
+    alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     kubernetes.io/ingress.class: alb
     # cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  ingressClassName: alb # aws alb controller가 관리하고 있음을 의미
+  ingressClassName: alb
   tls:
     - hosts:
-        - live-de-mlops.com
-      # secretName: live-de-mlops-tls-secret
+        - live-grafana.com
+      # secretName: grafana-tls-secret
   rules:
-    - # host: live-de-mlops.com
+    - # host: live-grafana.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: dummy-nginx-service
+                name: loki-stack-grafana
                 port:
-                  number: 8000
+                  number: 3000
