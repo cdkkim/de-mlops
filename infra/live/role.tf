@@ -73,7 +73,8 @@ resource "aws_iam_policy" "amp_remote_write" {
           "aps:RemoteWrite",
           "aps:GetSeries",
           "aps:GetLabels",
-          "aps:GetMetricMetadata"
+          "aps:GetMetricMetadata",
+          "aps:QueryMetrics"
         ],
         Resource = "*"
       }

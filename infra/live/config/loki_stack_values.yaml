@@ -49,6 +49,9 @@ grafana:
   serviceAccount:
     create: false
     name: grafana-sa
+  grafana.ini:
+    auth:
+      sigv4_auth_enabled: true
   datasources:
     enabled: true
     datasources.yaml:
@@ -65,15 +68,15 @@ grafana:
           isDefault: false
           url: http://prometheus-stack-kube-prom-prometheus:9090
         - name: AMP
+          editable: true
           type: prometheus
           access: proxy
           isDefault: false
           jsonData:
             sigV4Auth: true
             sigV4Region: ap-northeast-2 # 사용 중인 리전으로 수정
-            sigV4AuthType: default
           url: https://example.amazonaws.com
-    plugins:
-      - grafana-amazonprometheus-datasource
+  plugins:
+    - grafana-amazonprometheus-datasource
 promtail:
   enabled: true
