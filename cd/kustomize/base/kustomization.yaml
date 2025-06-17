@@ -4,3 +4,6 @@ resources:
   - issuer.yaml
   - pod.yaml
   - service.yaml
+  - argo_ingress.yaml
+  - grafana_ingress.yaml
+  
