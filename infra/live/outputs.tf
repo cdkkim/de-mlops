@@ -23,7 +23,9 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.s3_storage.bucket
 }
 
+/*
 output "rds_cluster_name" {
   description = "RDS cluster name"
   value       = aws_rds_cluster.rds_cluster.cluster_identifier
 }
+*/

@@ -35,6 +35,7 @@ resource "aws_iam_policy" "live_s3_rw_policy" {
   })
 }
 
+/*
 resource "aws_iam_policy" "live_rds_access_policy" {
   name = "live-rds-access"
   policy = jsonencode({
@@ -52,6 +53,7 @@ resource "aws_iam_policy" "live_rds_access_policy" {
     ]
   })
 }
+*/
 
 resource "aws_iam_policy" "live_alb_controller_policy" {
   name        = "live-alb-controller-policy"
@@ -69,7 +71,7 @@ module "irsa" {
   provider_url = module.eks.oidc_provider
   role_policy_arns = [
     aws_iam_policy.live_s3_rw_policy.arn,
-    aws_iam_policy.live_rds_access_policy.arn,
+    # aws_iam_policy.live_rds_access_policy.arn,
     aws_iam_policy.live_alb_controller_policy.arn
   ]
 

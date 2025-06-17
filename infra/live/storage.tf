@@ -6,6 +6,7 @@ resource "aws_s3_bucket" "s3_storage" {
   }
 }
 
+/*
 resource "aws_db_subnet_group" "aurora_subnet" {
   subnet_ids = module.vpc.private_subnets
 }
@@ -48,3 +49,4 @@ resource "aws_security_group" "aurora_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+*/

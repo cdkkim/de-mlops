@@ -3,7 +3,7 @@ module "eks" {
   version = "20.8.5"
 
   cluster_name    = "live-eks-${random_pet.name.id}"
-  cluster_version = "1.29"
+  cluster_version = "1.32" # 1.32 is the latest version 구 버전 사용시 extended support 서비스를 사용함으로써 추가 비용 발생.
 
   cluster_endpoint_public_access           = true
   enable_cluster_creator_admin_permissions = true
