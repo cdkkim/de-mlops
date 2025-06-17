@@ -6,6 +6,7 @@ resource "aws_s3_bucket" "s3_storage" {
   }
 }
 
+/*
 resource "aws_db_subnet_group" "aurora_subnet" {
   subnet_ids = data.aws_subnets.default_subnets.ids
 }
@@ -48,3 +49,4 @@ resource "aws_security_group" "aurora_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+*/
