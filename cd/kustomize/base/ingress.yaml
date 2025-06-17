@@ -14,7 +14,7 @@ spec:
         - dummy-nginx.local.com
       # secretName: dummy-nginx-tls-secret
   rules:
-    - host: dummy-nginx.local.com
+    - # host: dummy-nginx.local.com
       http:
         paths:
           - path: /
