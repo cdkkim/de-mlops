@@ -106,7 +106,6 @@ resource "null_resource" "apply_argocd_resources" {
     command = <<EOT
       aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile}
       kubectl apply -f config/argo_resource.yaml
-      kubectl apply -f config/argo_ingress.yaml
     EOT
   }
 }
