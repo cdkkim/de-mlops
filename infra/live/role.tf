@@ -62,6 +62,25 @@ resource "aws_iam_policy" "live_alb_controller_policy" {
   policy = file("config/alb_policy.json")
 }
 
+resource "aws_iam_policy" "amp_remote_write" {
+  name = "AMPRemoteWritePolicy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "aps:RemoteWrite",
+          "aps:GetSeries",
+          "aps:GetLabels",
+          "aps:GetMetricMetadata"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 module "irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version = "5.39.0"
@@ -78,5 +97,21 @@ module "irsa" {
   oidc_fully_qualified_subjects = [
     "system:serviceaccount:kube-system:live-eks-sa",
     "system:serviceaccount:default:live-eks-sa"
+  ]
+}
+
+module "monitoring_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "5.39.0"
+
+  create_role  = true
+  role_name    = "monitoring-irsa-role"
+  provider_url = module.eks.oidc_provider
+  role_policy_arns = [
+    aws_iam_policy.live_s3_rw_policy.arn,
+    aws_iam_policy.amp_remote_write.arn
+  ]
+  oidc_fully_qualified_subjects = [
+    "system:serviceaccount:monitoring:monitoring-sa",
   ]
 }

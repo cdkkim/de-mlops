@@ -41,11 +41,14 @@ grafana:
     tag: "11.6.1" # sha오류 관련
   adminUser: admin
   adminPassword: admin123 # Grafana 비밀번호
+  persistence:
+    enabled: false
   service:
     type: ClusterIP
     port: 3000
-  persistence:
-    enabled: false
+  serviceAccount:
+    create: false
+    name: grafana-sa
   datasources:
     enabled: true
     datasources.yaml:
@@ -56,5 +59,21 @@ grafana:
           url: http://loki-stack:3100
           access: proxy
           isDefault: true
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          isDefault: false
+          url: http://prometheus-stack-kube-prom-prometheus:9090
+        - name: AMP
+          type: prometheus
+          access: proxy
+          isDefault: false
+          jsonData:
+            sigV4Auth: true
+            sigV4Region: ap-northeast-2 # 사용 중인 리전으로 수정
+            sigV4AuthType: default
+          url: https://example.amazonaws.com
+    plugins:
+      - grafana-amazonprometheus-datasource
 promtail:
   enabled: true

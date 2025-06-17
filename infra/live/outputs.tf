@@ -23,6 +23,11 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.s3_storage.bucket
 }
 
+output "amp_workspace_url" {
+  description = "AMP workspace URL"
+  value       = local.amp_workspace_url
+}
+
 /*
 output "rds_cluster_name" {
   description = "RDS cluster name"

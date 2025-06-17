@@ -6,33 +6,28 @@ resource "aws_s3_bucket" "loki_s3_storage" {
   }
 }
 
+resource "aws_prometheus_workspace" "live_amp_workspace" {
+  alias = "live-amp-workspace"
+}
+
+locals {
+  amp_workspace_url = aws_prometheus_workspace.live_amp_workspace.prometheus_endpoint
+}
+
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
   }
 }
 
-resource "kubernetes_service_account" "loki_s3_sa" {
+resource "kubernetes_service_account" "monitoring_sa" {
   metadata {
-    name      = "loki-s3-sa"
+    name      = "monitoring-sa"
     namespace = "monitoring"
     annotations = {
-      "eks.amazonaws.com/role-arn" = module.loki_irsa.iam_role_arn
+      "eks.amazonaws.com/role-arn" = module.monitoring_irsa.iam_role_arn
     }
   }
-}
-
-module "loki_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "5.39.0"
-
-  create_role      = true
-  role_name        = "loki-irsa-role"
-  provider_url     = module.eks.oidc_provider
-  role_policy_arns = [aws_iam_policy.live_s3_rw_policy.arn]
-  oidc_fully_qualified_subjects = [
-    "system:serviceaccount:monitoring:loki-s3-sa",
-  ]
 }
 
 resource "helm_release" "loki_stack" {
@@ -56,18 +51,23 @@ resource "helm_release" "loki_stack" {
   }
 
   set {
-    name  = "loki.serviceAccount.create"
-    value = "false"
-  }
-
-  set {
     name  = "loki.serviceAccount.name"
-    value = kubernetes_service_account.loki_s3_sa.metadata[0].name
+    value = kubernetes_service_account.monitoring_sa.metadata[0].name
   }
 
   set {
-    name  = "grafana.plugins[0]"
-    value = "grafana-amazonprometheus-datasource"
+    name  = "grafana.serviceAccount.name"
+    value = kubernetes_service_account.monitoring_sa.metadata[0].name
+  }
+
+  set {
+    name  = "grafana.datasources.datasources\\.yaml.datasources[2].jsonData.sigV4Region"
+    value = var.region
+  }
+
+  set {
+    name  = "grafana.datasources.datasources\\.yaml.datasources[2].url"
+    value = local.amp_workspace_url
   }
 }
 
@@ -77,74 +77,27 @@ resource "helm_release" "prometheus_stack" {
   chart      = "kube-prometheus-stack"
   namespace  = "monitoring"
 
+  values = [
+    file("config/prometheus_values.yaml")
+  ]
+
   set {
     name  = "grafana.enabled"
     value = "false"
   }
 
   set {
-    name  = "prometheus.serviceAccount.create"
-    value = "false"
-  }
-
-  set {
     name  = "prometheus.serviceAccount.name"
-    value = kubernetes_service_account.amp_sa.metadata[0].name
+    value = kubernetes_service_account.monitoring_sa.metadata[0].name
   }
 
   set {
     name  = "prometheus.prometheusSpec.remoteWrite[0].url"
-    value = "https://aps-workspaces.ap-northeast-2.amazonaws.com/workspaces/${aws_prometheus_workspace.live_amp_workspace.id}/api/v1/remote_write"
+    value = "${local.amp_workspace_url}/api/v1/remote_write"
   }
 
   set {
     name  = "prometheus.prometheusSpec.remoteWrite[0].sigv4.region"
     value = var.region
   }
-}
-
-resource "aws_prometheus_workspace" "live_amp_workspace" {
-  alias = "live-amp-workspace"
-}
-
-resource "aws_iam_policy" "amp_remote_write" {
-  name = "AMPRemoteWritePolicy"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "aps:RemoteWrite",
-          "aps:GetSeries",
-          "aps:GetLabels",
-          "aps:GetMetricMetadata"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "kubernetes_service_account" "amp_sa" {
-  metadata {
-    name      = "amp-sa"
-    namespace = "monitoring"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = module.amp_irsa.iam_role_arn
-    }
-  }
-}
-
-module "amp_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "5.39.0"
-
-  create_role      = true
-  role_name        = "amp-irsa-role"
-  provider_url     = module.eks.oidc_provider
-  role_policy_arns = [aws_iam_policy.amp_remote_write.arn]
-  oidc_fully_qualified_subjects = [
-    "system:serviceaccount:monitoring:amp-sa",
-  ]
 }
