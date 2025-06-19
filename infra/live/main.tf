@@ -41,6 +41,8 @@ resource "helm_release" "cert_manager" {
     name  = "installCRDs"
     value = "true"
   }
+
+  depends_on = [module.eks, null_resource.wait_for_aws_lb_controller]
 }
 
 resource "kubernetes_service_account" "live_eks_sa_kubesys" {
@@ -83,6 +85,8 @@ resource "helm_release" "aws_lb_controller" {
     name  = "serviceAccount.name"
     value = kubernetes_service_account.live_eks_sa_kubesys.metadata[0].name
   }
+
+  depends_on = [module.eks]
 }
 
 resource "helm_release" "argocd" {
@@ -97,56 +101,47 @@ resource "helm_release" "argocd" {
   values = [
     file("config/argo_values.yaml")
   ]
+
+  depends_on = [module.eks]
 }
 
-resource "argocd_application" "argo_resource" {
-  metadata {
-    name      = "my-app"
-    namespace = "argocd"
-  }
-
-  spec {
-    project = "default"
-
-    source {
-      repo_url        = var.argocd_git_repo_url
-      target_revision = var.argocd_git_branch
-      path            = var.argocd_git_path
-    }
-
-    destination {
-      server    = "https://kubernetes.default.svc"
-      namespace = "default"
-    }
-
-    sync_policy {
-      automated {
-        prune     = true
-        self_heal = true
-      }
-      sync_options = ["CreateNamespace=true"]
-    }
-  }
+resource "kubectl_manifest" "main_ingress" {
+  yaml_body  = file("config/ingress/main.yaml")
+  depends_on = [null_resource.wait_for_aws_lb_controller]
 }
 
-resource "kubernetes_manifest" "main_ingress" {
-  manifest = yamldecode(file("config/ingress/main.yaml"))
+resource "kubectl_manifest" "argo_ingress" {
+  yaml_body  = file("config/ingress/argo.yaml")
+  depends_on = [helm_release.argocd, null_resource.wait_for_aws_lb_controller]
 }
 
-resource "kubernetes_manifest" "argo_ingress" {
-  manifest   = yamldecode(file("config/ingress/argo.yaml"))
+resource "kubectl_manifest" "grafana_ingress" {
+  yaml_body  = file("config/ingress/grafana.yaml")
+  depends_on = [helm_release.loki_stack, null_resource.wait_for_aws_lb_controller]
+}
+
+resource "kubectl_manifest" "argo_resource" {
+  yaml_body  = file("config/argo_resource.yaml")
   depends_on = [helm_release.argocd]
 }
 
-resource "kubernetes_manifest" "grafana_ingress" {
-  manifest   = yamldecode(file("config/ingress/grafana.yaml"))
-  depends_on = [helm_release.loki_stack]
-}
-
-resource "null_resource" "apply_argocd_resources" {
+resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile}
     EOT
   }
+
+  depends_on = [module.eks]
+}
+
+resource "null_resource" "wait_for_aws_lb_controller" {
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for aws-load-balancer-controller webhook..."
+      kubectl wait --namespace kube-system --for=condition=Available deployment/aws-lb-controller-aws-load-balancer-controller --timeout=120s
+    EOT
+  }
+
+  depends_on = [helm_release.aws_lb_controller]
 }

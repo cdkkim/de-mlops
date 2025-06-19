@@ -28,6 +28,8 @@ resource "kubernetes_service_account" "monitoring_sa" {
       "eks.amazonaws.com/role-arn" = module.monitoring_irsa.iam_role_arn
     }
   }
+
+  depends_on = [module.eks]
 }
 
 resource "helm_release" "loki_stack" {
@@ -69,6 +71,8 @@ resource "helm_release" "loki_stack" {
     name  = "grafana.datasources.datasources\\.yaml.datasources[2].url"
     value = local.amp_workspace_url
   }
+
+  depends_on = [module.eks, null_resource.wait_for_aws_lb_controller]
 }
 
 resource "helm_release" "prometheus_stack" {
@@ -100,4 +104,6 @@ resource "helm_release" "prometheus_stack" {
     name  = "prometheus.prometheusSpec.remoteWrite[0].sigv4.region"
     value = var.region
   }
+
+  depends_on = [module.eks]
 }

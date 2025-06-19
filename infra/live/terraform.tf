@@ -21,9 +21,9 @@ terraform {
       version = "~> 2.13.2"
     }
 
-    argocd = {
-      source  = "argoproj-labs/argocd"
-      version = "7.8.2"
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.19.0"
     }
   }
 
@@ -69,9 +69,4 @@ provider "helm" {
   }
 }
 
-provider "argocd" {
-  server_addr = "argocd-server.argocd.svc"
-  username    = "admin"
-  password    = "password"
-  insecure    = true # terraform => argocd 사이 argo_values의 --insecure 와는 적용 위치 다름
-}
+provider "kubectl" {}
