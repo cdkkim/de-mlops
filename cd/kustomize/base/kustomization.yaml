@@ -1,9 +1,5 @@
 resources:
   - awscli_pod.yaml
-  - ingress.yaml
   - issuer.yaml
   - pod.yaml
   - service.yaml
-  - argo_ingress.yaml
-  - grafana_ingress.yaml
-  
