@@ -2,7 +2,7 @@
 module "eks_auth" {
   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
   version = "~> 20.0"
-  
+
   manage_aws_auth_configmap = true
 
   aws_auth_roles = [
@@ -64,7 +64,7 @@ resource "kubernetes_role_binding" "dev_binding" {
   }
 
   subject {
-    kind      = "Group"
-    name      = "dev-group" # aws-auth에서 정의한 그룹
+    kind = "Group"
+    name = "dev-group" # aws-auth에서 정의한 그룹
   }
 }

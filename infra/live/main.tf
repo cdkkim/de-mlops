@@ -99,13 +99,54 @@ resource "helm_release" "argocd" {
   ]
 }
 
-resource "null_resource" "apply_argocd_resources" {
-  depends_on = [helm_release.argocd]
+resource "argocd_application" "argo_resource" {
+  metadata {
+    name      = "my-app"
+    namespace = "argocd"
+  }
 
+  spec {
+    project = "default"
+
+    source {
+      repo_url        = var.argocd_git_repo_url
+      target_revision = var.argocd_git_branch
+      path            = var.argocd_git_path
+    }
+
+    destination {
+      server    = "https://kubernetes.default.svc"
+      namespace = "default"
+    }
+
+    sync_policy {
+      automated {
+        prune     = true
+        self_heal = true
+      }
+      sync_options = ["CreateNamespace=true"]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "main_ingress" {
+  manifest = yamldecode(file("config/ingress/main.yaml"))
+}
+
+resource "kubernetes_manifest" "argo_ingress" {
+  manifest   = yamldecode(file("config/ingress/argo.yaml"))
+  depends_on = [helm_release.argocd]
+}
+
+resource "kubernetes_manifest" "grafana_ingress" {
+  manifest   = yamldecode(file("config/ingress/grafana.yaml"))
+  depends_on = [helm_release.loki_stack]
+}
+
+resource "null_resource" "apply_argocd_resources" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name} --profile ${var.profile}
-      kubectl apply -f config/argo_resource.yaml
     EOT
   }
 }

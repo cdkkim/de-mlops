@@ -20,6 +20,11 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.13.2"
     }
+
+    argocd = {
+      source  = "argoproj-labs/argocd"
+      version = "7.8.2"
+    }
   }
 
   required_version = "~> 1.3"
@@ -62,4 +67,11 @@ provider "helm" {
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.cluster_token.token
   }
+}
+
+provider "argocd" {
+  server_addr = "argocd-server.argocd.svc"
+  username    = "admin"
+  password    = "password"
+  insecure    = true # terraform => argocd 사이 argo_values의 --insecure 와는 적용 위치 다름
 }
