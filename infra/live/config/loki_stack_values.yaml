@@ -1,0 +1,82 @@
+# loki-stack-values.yaml
+loki:
+  image:
+    tag: '2.9.3'
+  enabled: true
+  persistence:
+    enabled: false
+  service:
+    type: ClusterIP
+  serviceAccount:
+    create: false
+    name: loki-s3-sa
+  config:
+    schema_config:
+      configs:
+        - from: 2025-06-13
+          store: boltdb-shipper
+          object_store: s3
+          schema: v12
+          index:
+            prefix: loki_index_
+            period: 24h
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /data/loki/boltdb-shipper-active
+        cache_location: /data/loki/boltdb-shipper-cache
+        cache_ttl: 24h
+        shared_store: s3
+      aws:
+        s3: live-loki-s3
+        region: ap-northeast-2
+    chunk_store_config:
+      max_look_back_period: 168h
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 168h
+
+grafana:
+  enabled: true
+  image:
+    tag: "11.6.1" # sha오류 관련
+  adminUser: admin
+  adminPassword: admin123 # Grafana 비밀번호
+  persistence:
+    enabled: false
+  service:
+    type: ClusterIP
+    port: 3000
+  serviceAccount:
+    create: false
+    name: grafana-sa
+  grafana.ini:
+    auth:
+      sigv4_auth_enabled: true
+  datasources:
+    enabled: true
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Loki
+          type: loki
+          url: http://loki-stack:3100
+          access: proxy
+          isDefault: true
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          isDefault: false
+          url: http://prometheus-stack-kube-prom-prometheus:9090
+        - name: AMP
+          editable: true
+          type: prometheus
+          access: proxy
+          isDefault: false
+          jsonData:
+            sigV4Auth: true
+            sigV4Region: ap-northeast-2 # 사용 중인 리전으로 수정
+          url: https://example.amazonaws.com
+  plugins:
+    - grafana-amazonprometheus-datasource
+promtail:
+  enabled: true

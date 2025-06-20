@@ -1,0 +1,33 @@
+# prometheus_values.yaml
+
+grafana:
+  enabled: false
+
+alertmanager:
+  enabled: true
+
+prometheus:
+  serviceAccount:
+    create: false
+    name: prometheus-sa
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+    remoteWrite:
+      - url: https://example.com
+        sigv4:
+          region: example
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+prometheusOperator:
+  admissionWebhooks:
+    enabled: true
+    patch:
+      enabled: true
