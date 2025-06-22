@@ -1,0 +1,5 @@
+resources:
+  - awscli_pod.yaml
+  - issuer.yaml
+  - pod.yaml
+  - service.yaml
