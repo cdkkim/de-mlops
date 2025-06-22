@@ -1,0 +1,8 @@
+server:
+  extraArgs:
+    - --insecure
+
+configs:
+  secret:
+    # "password" bcrypt 해시값 넣기 (htpasswd 명령어로 생성)
+    argocdServerAdminPassword: "$2y$10$/tmcscZlxuJzEqCFo.i0W.dw3r6Sum8pIk8js222RZ9RWhwboePoi"

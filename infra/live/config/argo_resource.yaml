@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/cdkkim/de-mlops.git
+    targetRevision: main
+    path: cd/kustomize/overlays
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  syncPolicy:
+    automated:
+      prune: true           # Git에서 제거된 리소스 자동 삭제
+      selfHeal: true        # 수동 변경 복구
+    syncOptions:
+      - CreateNamespace=true  # 네임스페이스 자동 생성
