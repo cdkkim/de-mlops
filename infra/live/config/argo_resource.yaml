@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/cdkkim/de-mlops.git
-    targetRevision: cd-manifest
+    targetRevision: main
     path: cd/kustomize/overlays
 
   destination:
