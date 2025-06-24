@@ -24,3 +24,10 @@ spec:
                 name: dummy-nginx-service
                 port:
                   number: 8000
+          # - path: /app
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: main-app-service
+          #       port:
+          #         number: 8000
