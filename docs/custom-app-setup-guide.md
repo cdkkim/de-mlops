@@ -7,8 +7,8 @@ Kustomize를 사용하여 쿠버네티스 클러스터에 커스텀 애플리케
 ## Prerequisites
 
 - Main branch 편집 권한
-- Git에 application 리포지토리가 push되어 있어야 함
-- application 이미지가 build 가능한 상태여야 함
+- Git에 application 리포지토리가 `src` 디렉토리에 push되어 있어야 함
+- Dockerfile이 `src` 루트 디렉토리에 존재하고 application 이미지가 build 가능한 상태여야 함
 
 ## 1단계: 기본 리소스 구성
 
