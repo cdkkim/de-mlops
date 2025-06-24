@@ -6,3 +6,5 @@ images:
     newTag: latest
   - name: nginx
     newTag: latest
+  - name: # your-profile/your-image-name
+    newTag: latest
