@@ -44,11 +44,10 @@ jobs:
 
     - name: Push to cd
       run: |
+        cd cd/kustomize/overlays
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
-        git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/cdkkim/de-mlops.git
-        cd de-mlops/cd/kustomize/overlays/dev
         yq eval '.images[].newTag = "${{ github.sha }}"' -i kustomization.yaml
-        git add .
+        git add kustomization.yaml
         git commit -m "Update from GitHub Actions" || echo "No changes to commit"
         git push
