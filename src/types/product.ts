@@ -48,6 +48,7 @@ export interface DailyAveragePrice {
     date: string;
     avgDiscountedPrice: number;
     avgRegularPrice: number;
+    productCount: number;
 }
 
 export interface PriceTrend {

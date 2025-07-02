@@ -7,89 +7,99 @@
 [운영환경 설정](docs/README_infralive.md)
 ||||||| (empty tree)
 
-# Price Tracker
+||||||| parent of 56dc5ab (Add Docker deployment configuration)
+# Price Tracker 대시보드
 
-Apple 제품의 실시간 가격 변동을 추적하고, 시장 동향을 분석하는 대시보드입니다. Next.js와 TypeScript로 구축되었으며, Docker를 통해 어떤 환경에서든 쉽게 실행할 수 있습니다.
+이 프로젝트는 CSV 파일의 상품 가격 데이터를 추적하고 시각화하기 위해 제작된 웹 대시보드입니다. 사용자는 가격 추이, 시장 변동성을 분석하고, 계층적 드릴다운 인터페이스를 통해 상품 데이터를 탐색할 수 있습니다.
 
-## ✨ 주요 기능
+## 프로젝트 구조
 
--   **가격 추이 분석**: 선택한 제품 또는 카테고리의 시계열 가격 변동을 차트로 시각화합니다.
--   **시장 동향(Market Movers)**: 가격 및 할인율의 변동이 가장 큰 제품을 추적합니다.
--   **동적 필터링**: 특정 제품 카테고리를 선택하면, 가격 추이와 시장 동향이 해당 카테고리에 맞춰 동적으로 필터링됩니다.
--   **드릴다운 인터페이스**: 직관적인 UI를 통해 전체 카테고리에서 개별 제품까지 손쉽게 탐색할 수 있습니다.
--   **다크/라이트 모드**: 사용자의 시스템 설정에 맞는 테마를 제공합니다.
+이 프로젝트는 Next.js 프론트엔드 애플리케이션을 포함하는 모노레포 구조입니다.
 
-## 🛠️ 기술 스택
+```
+/
+├── public/              # 정적 에셋
+├── src/
+│   ├── app/             # Next.js 앱 라우터, 페이지 및 API 라우트 포함
+│   │   ├── api/         # API 엔드포인트
+│   │   └── (pages)/     # 메인 UI 페이지
+│   ├── components/      # 재사용 가능한 리액트 컴포넌트 (차트, UI 요소 등)
+│   ├── lib/             # 핵심 데이터 처리 로직 (data.ts)
+│   └── types/           # TypeScript 타입 정의
+├── .gitignore           # Git이 무시할 파일 및 폴더 목록
+├── docker-compose.yml   # Docker Compose 서비스 설정
+├── Dockerfile           # 웹 애플리케이션 Docker 설정
+├── input.csv            # 애플리케이션의 원본 데이터 소스
+├── next.config.js       # Next.js 설정
+└── package.json         # 프로젝트 의존성 및 스크립트
+```
 
--   **프레임워크**: Next.js (React)
--   **언어**: TypeScript
--   **스타일링**: Tailwind CSS
--   **데이터 처리**: PapaParse (CSV 파싱)
--   **차트**: Recharts
--   **실행 환경**: Docker (Node.js 18)
+-   **`input.csv`**: 원본 데이터 소스 파일입니다. 모든 분석은 이 파일로부터 생성됩니다.
+-   **`src/lib/data.ts`**: `input.csv`를 읽고 처리하는 핵심 파일입니다. 가격 추이, 시장 변동 데이터, 드릴다운 탐색을 위한 데이터를 계산합니다.
+-   **`src/app/api/products/route.ts`**: 처리된 데이터를 프론트엔드로 전달하는 백엔드 API 엔드포인트입니다.
+-   **`src/components/`**: 가격 추이를 시각화하는 `TrendChart.tsx`와 카테고리 탐색을 위한 `DrilldownNavigator.tsx` 등 모든 UI 컴포넌트가 포함됩니다.
 
----
+## 기술 스택
 
-## 🚀 시작하기
+-   **프레임워크**: [Next.js](https://nextjs.org/) (React)
+-   **언어**: [TypeScript](https://www.typescriptlang.org/)
+-   **스타일링**: [Tailwind CSS](https://tailwindcss.com/)
+-   **차트**: [Recharts](https://recharts.org/)
+-   **컨테이너화**: [Docker](https://www.docker.com/)
 
-이 프로젝트는 Docker를 사용하여 실행하는 것을 강력히 권장합니다. 로컬 컴퓨터에 Node.js나 다른 개발 도구를 설치할 필요 없이, Docker만으로 모든 환경에서 동일하게 프로젝트를 실행할 수 있습니다.
+## 시작하기
+
+로컬 컴퓨터에서 프로젝트를 설정하고 실행하려면 아래의 안내를 따르세요.
 
 ### 사전 요구사항
 
--   [Docker Desktop](https://www.docker.com/products/docker-desktop/) 이 설치되어 있어야 합니다. (Windows, Mac, Linux 지원)
+-   [Node.js](https://nodejs.org/) (v18 이상 권장)
+-   [npm](https://www.npmjs.com/) 또는 [yarn](https://yarnpkg.com/)
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop/) (컨테이너 배포 시 필요)
 
-### 실행 방법 (모든 OS 공통)
+### 1. 로컬 환경에서 개발하기
 
-1.  **프로젝트 클론 또는 다운로드**:
+개발 및 테스트에 권장되는 방법입니다.
+
+1.  **리포지토리 클론**
     ```bash
-    git clone [저장소 URL]
-    cd [프로젝트 폴더명]
+    git clone <repository-url>
+    cd <project-folder>
     ```
 
-2.  **도커 컨테이너 빌드 및 실행**:
-    프로젝트 루트 디렉터리에서 아래 명령어를 실행합니다. 최초 실행 시 이미지를 빌드하므로 시간이 다소 소요될 수 있습니다.
-
-    ```bash
-    docker-compose up --build
-    ```
-    
-    `--build` 옵션은 `Dockerfile`이나 소스 코드에 변경사항이 있을 때 이미지를 새로 빌드하기 위해 사용합니다. 이후 실행 시에는 `docker-compose up` 만으로 더 빠르게 실행할 수 있습니다.
-
-3.  **애플리케이션 접속**:
-    웹 브라우저를 열고 `http://localhost:3000` 으로 접속하세요.
-
-4.  **컨테이너 중지**:
-    터미널에서 `Ctrl + C`를 누르면 컨테이너가 중지됩니다. 백그라운드에서 실행했다면 `docker-compose down` 명령어로 중지할 수 있습니다.
-
----
-
-### (선택) 로컬 환경에서 직접 실행하기
-
-Docker를 사용하지 않고 로컬 환경에서 직접 실행할 수도 있습니다.
-
--   **Node.js**: v18 이상
--   **패키지 매니저**: npm
-
-1.  **의존성 패키지 설치**:
+2.  **의존성 설치**
     ```bash
     npm install
     ```
 
-2.  **개발 서버 실행**:
+3.  **개발 서버 실행**
+    애플리케이션이 핫 리로딩 기능과 함께 개발 모드로 시작됩니다.
     ```bash
     npm run dev
     ```
-3.  **애플리케이션 접속**:
-    웹 브라우저를 열고 `http://localhost:3000` 으로 접속하세요.
 
-## 📊 데이터 구조
+4.  **애플리케이션 열기**
+    웹 브라우저에서 [http://localhost:3000](http://localhost:3000) 주소로 접속하세요.
 
-`input.csv` 파일은 다음과 같은 구조를 가집니다:
+### 2. Docker로 배포하기
 
-```csv
-DATE,PROD ID,CPH L1,CPH L2,CPH L3,CPH L4,PROD NAME,REGULAR PRICE,DISCOUNTED PRICE,DISCOUNT RATE
-2025/06/01,MXGL3KH/A,Watch,Watch SE (2nd Gen),Watch SE (2nd Gen) Cell,Watch SE (2nd Gen) Cell,APPLE WATCH SE 44 MI AL MI SB SM CEL-KOR,439000.0,434610.0,0.01
-```
+이 방법은 애플리케이션을 Docker 컨테이너 내부에서 실행합니다.
+
+1.  **Docker Desktop이 실행 중인지 확인하세요.**
+
+2.  **컨테이너 빌드 및 실행**
+    프로젝트 루트 디렉터리에서 다음 명령을 실행하세요.
+    ```bash
+    docker compose up --build
+    ```
+    이 명령어는 `Dockerfile`에 정의된 대로 Docker 이미지를 빌드하고 서비스를 시작합니다.
+
+3.  **애플리케이션 열기**
+    웹 브라우저에서 [http://localhost:3000](http://localhost:3000) 주소로 접속하세요.
+
+## 데이터에 대하여
+
+-   현재 `input.csv`에 포함된 데이터는 기능 시연을 위한 임의의 샘플 데이터입니다.
 
 ## 🎨 디자인 특징
 

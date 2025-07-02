@@ -192,7 +192,8 @@ function getPriceTrends(hierarchy: string[], drilldownItems: DrilldownItem[], da
                 trend.push({ 
                   date, 
                   avgDiscountedPrice: totalDiscounted / filteredProds.length,
-                  avgRegularPrice: totalRegular / filteredProds.length 
+                  avgRegularPrice: totalRegular / filteredProds.length,
+                  productCount: filteredProds.length 
                 });
             }
         }
@@ -214,4 +215,4 @@ export function getProcessedDataForPath(path: string[], days: number = 14): Proc
     trends: getPriceTrends(hierarchy, drilldownItems, days),
     marketMovers: getMarketMovers(hierarchy),
   };
-} 
+}
