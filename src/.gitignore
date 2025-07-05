@@ -1,0 +1,39 @@
+# Dependencies
+/node_modules
+/venv
+
+# Next.js build artifacts
+/.next/
+/out/
+
+# SWC cache
+/.swc/
+
+# Production build
+/build
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Environment variables
+# Never commit secrets!
+.env
+.env.*
+!.env.example
+
+# Editor and OS specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# User-specific data (if applicable)
+# If input.csv contains personal or large data, it should be ignored.
+# input.csv
+
+# Docker
+docker-compose.override.yml 
