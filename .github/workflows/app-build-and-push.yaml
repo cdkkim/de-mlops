@@ -10,6 +10,8 @@ on:
       - 'infra'
       - 'docs'
       - 'README.md'
+      - '.gitignore'
+      - '.dockerignore'
       
 jobs:
   build-and-push:
@@ -17,9 +19,9 @@ jobs:
     strategy:
       matrix:
         service:
-          - name: main-app # cd/kustomize/base/example_app.yaml 내용과 일치시키는 것을 권장
-            context: ./src # 실제 빌드 경로에 맞게 수정 필요
-            dockerfile: ./src/Dockerfile # 실제 빌드 경로에 맞게 수정 필요
+          - name: apple-product-prices # cd/kustomize/base/example_app.yaml 내용과 일치시키는 것을 권장
+            context: ./webapp # 실제 빌드 경로에 맞게 수정 필요
+            dockerfile: ./webapp/Dockerfile # 실제 빌드 경로에 맞게 수정 필요
 
     steps:
     - name: Checkout repository

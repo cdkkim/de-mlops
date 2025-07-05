@@ -76,3 +76,6 @@ Kustomize를 사용하여 쿠버네티스 클러스터에 커스텀 애플리케
          port:
            number: 8000  # your_app_name.yaml의 서비스 포트와 일치해야 함
    ```
+### 🎯 주의사항
+>**🎯만약 EKS 리소스를 띄운 후에 Ingress를 추가하는 경우 k9s에서 Ingress를 삭제 후 다시 적용해야합니다.
+>이미 alb가 생성되었으면 Target Group 추적이 안 됨!**

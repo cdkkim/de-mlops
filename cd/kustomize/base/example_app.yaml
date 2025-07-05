@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: apple-product-prices # your-container-name (ex:main-app)
-        image: 456330605094.dkr.ecr.ap-northeast-2.amazonaws.com/de-mlops/apple-product-prices:latest # your-profile/your-image-name:your-tag (ex:middlek/main-app:latest)
+        image: apple-product-prices # your-profile/your-image-name (ex:middlek/main-app)
         imagePullPolicy: Always
         ports:
         - containerPort: 3000 # your-container-port (ex:8001)
