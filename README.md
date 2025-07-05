@@ -8,12 +8,6 @@
 ### live
 [운영환경 설정](docs/README_infralive.md)
 
-## custom app 추가
-[커스텀 애플리케이션 추가](docs/custom-app-setup-guide.md)
-
-### [Apple Product Price Tracker](https://github.com/cdkkim/de-mlops/tree/main/webapp)
-
-# Thanks to
-- Apple Inc. - 제품 정보 제공
-- Next.js 팀 - 훌륭한 프레임워크
-- Tailwind CSS 팀 - 아름다운 CSS 프레임워크 
+### custom app 추가
+- [커스텀 애플리케이션 추가 방법](docs/custom-app-setup-guide.md)
+- [Apple Product Price Tracker](docs/apple-price-tracker.md)
