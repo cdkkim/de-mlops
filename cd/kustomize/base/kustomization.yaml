@@ -3,4 +3,4 @@ resources:
   - issuer.yaml
   - pod.yaml
   - service.yaml
-  # - example_app.yaml
+  - example_app.yaml
